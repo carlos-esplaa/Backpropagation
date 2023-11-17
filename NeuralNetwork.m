@@ -54,12 +54,22 @@ classdef NeuralNetwork
         
         function accuracy = calculateAccuracy(obj, X, y)
             predictions = obj.feedforward(X);
-            [~, predictedLabels] = max(predictions);
-            [~, trueLabels] = max(y);
-
+            [~, predictedLabels] = max(predictions, [], 1);  % Encuentra el índice del valor máximo a lo largo de las columnas
+            [~, trueLabels] = max(y, [], 1);
+        
+            predictedLabels = predictedLabels(:);  % Asegúrate de que sea un vector de columna
+            trueLabels = trueLabels(:);  % Asegúrate de que sea un vector de columna
+        
+            % Ajusta las dimensiones si es necesario
+            if length(predictedLabels) ~= length(trueLabels)
+                minLen = min(length(predictedLabels), length(trueLabels));
+                predictedLabels = predictedLabels(1:minLen);
+                trueLabels = trueLabels(1:minLen);
+            end
+        
             correctPredictions = sum(predictedLabels == trueLabels);
-            totalSamples = length(y);
-
+            totalSamples = length(trueLabels);
+        
             accuracy = correctPredictions / totalSamples;
         end
     end
